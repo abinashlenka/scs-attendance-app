@@ -61,7 +61,7 @@ export default function AttendanceApp() {
         <img 
           src="/bg-gate.jpg" 
           alt="SCS" 
-          {/* We bumped this from 50 to 80 for better visibility */}
+          /* We bumped this from 50 to 80 for better visibility */
           className="w-full h-full object-cover opacity-80 scale-105" 
         />
         {/* Figma Gradient Overlay - darkened slightly at the bottom for text contrast */}
