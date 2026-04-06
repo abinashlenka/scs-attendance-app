@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* 1. Reset everything to your deep dark maroon */
+/* Force the base background to match your Figma deep maroon */
 :root {
   background-color: #120505;
   color: white;
@@ -10,18 +10,19 @@ html, body {
   background-color: #120505 !important;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  font-family: sans-serif;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* 2. Custom helper for the "Glass" effect in your Figma */
+/* Glassmorphism helper for your UI panels */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 3. Hide scrollbars for the table */
+/* Clean scrollbar for the results table */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

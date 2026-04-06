@@ -9,11 +9,13 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
-      Extract attendance from this Chemistry register.
-      1. Count the total number of class columns (marked by initials at the top/bottom).
-      2. For each student row, extract: Roll Number (e.g. 061), Full Name, and total marks (x, 1, +).
-      Return ONLY a JSON object:
+      You are an SCS College Assistant. Analyze this attendance register image.
+      1. Extract College Name, Subject, and Month.
+      2. Identify the 'Total Classes' by counting valid signature columns.
+      3. For each student, extract: Roll Number, Name, and total marks (count 'x', '1', or initials as 1).
+      Return ONLY valid JSON:
       {
+        "college": "S.C.S. (A) College",
         "totalClasses": 14,
         "students": [
           { "rollNo": "061", "name": "DEVI JENA", "attended": 11 }
@@ -21,26 +23,18 @@ export async function POST(req: Request) {
       }
     `;
 
-    // Extract the base64 data from the URI
     const base64Data = image.split(",")[1];
-
     const result = await model.generateContent([
       prompt,
-      {
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg",
-        },
-      },
+      { inlineData: { data: base64Data, mimeType: "image/jpeg" } },
     ]);
 
-    // Clean potential markdown blocks
     const responseText = result.response.text();
     const cleanedJson = responseText.replace(/```json|```/g, "").trim();
     
     return NextResponse.json(JSON.parse(cleanedJson));
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to process image" }, { status: 500 });
+    console.error("AI Error:", error);
+    return NextResponse.json({ error: "Scan failed" }, { status: 500 });
   }
 }
