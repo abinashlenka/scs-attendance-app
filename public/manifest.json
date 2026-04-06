@@ -1,9 +1,12 @@
 {
   "name": "SCS Attendance Pro",
-  "short_name": "Attendance",
+  "short_name": "SCS Attendance",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a0a0a",
-  "theme_color": "#b91c1c",
-  "icons": [{ "src": "/icon.png", "sizes": "192x192", "type": "image/png" }]
+  "background_color": "#120505",
+  "theme_color": "#761E14",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
 }

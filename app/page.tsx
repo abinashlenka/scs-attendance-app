@@ -12,6 +12,7 @@ export default function AttendanceApp() {
   const [images, setImages] = useState<string[]>([]);
   const [data, setData] = useState<any>(null);
 
+  // Splash Screen timer (3 seconds)
   useEffect(() => {
     if (step === 'splash') {
       const timer = setTimeout(() => setStep('upload'), 3000);
@@ -29,6 +30,7 @@ export default function AttendanceApp() {
   };
 
   const startAnalysis = async () => {
+    if (images.length === 0) return;
     setStep('analyzing');
     try {
       const response = await fetch(images[0]);
@@ -49,6 +51,7 @@ export default function AttendanceApp() {
       reader.readAsDataURL(blob);
     } catch (err) {
       console.error(err);
+      alert("AI Scan failed. Please check your API key.");
       setStep('review');
     }
   };
@@ -56,22 +59,21 @@ export default function AttendanceApp() {
   return (
     <main className="relative min-h-screen text-white bg-[#120505]">
       
-      {/* --- REPLICA BACKGROUND (UPDATED OPACITY) --- */}
+      {/* --- BACKGROUND LAYER (80% OPACITY) --- */}
       <div className="fixed inset-0 z-0">
         <img 
           src="/bg-gate.jpg" 
-          alt="SCS" 
-          /* We bumped this from 50 to 80 for better visibility */
+          alt="SCS Gate" 
           className="w-full h-full object-cover opacity-80 scale-105" 
         />
-        {/* Figma Gradient Overlay - darkened slightly at the bottom for text contrast */}
+        {/* Figma Gradient Tint Overlay */}
         <div 
           className="absolute inset-0"
           style={{
             background: `linear-gradient(180deg, 
               rgba(153, 80, 72, 0.35) 0%, 
               rgba(118, 30, 20, 0.65) 50%, 
-              rgba(62, 23, 34, 0.95) 100%
+              rgba(62, 23, 34, 0.90) 100%
             )`
           }}
         />
@@ -81,17 +83,21 @@ export default function AttendanceApp() {
         
         {/* 1. SPLASH SCREEN */}
         {step === 'splash' && (
-          <motion.div key="splash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative z-10 flex flex-col items-center justify-center h-screen p-6 text-center">
+          <motion.div 
+            key="splash"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="relative z-10 flex flex-col items-center justify-center h-screen p-6 text-center"
+          >
             <div className="mb-14">
                <h2 className="text-2xl tracking-[0.25em] font-bold text-white drop-shadow-2xl">S.C.S(A) COLLEGE</h2>
                <p className="text-[10px] uppercase opacity-80 tracking-[0.4em] mt-3 font-bold">Attendance Scanner</p>
             </div>
             <div className="w-64 h-64 bg-white rounded-full flex items-center justify-center mb-14 shadow-2xl border-8 border-white/5">
-               <img src="/logo.png" alt="Logo" className="w-52 h-52 object-contain" />
+               <img src="/logo.png" alt="SCS Logo" className="w-52 h-52 object-contain" />
             </div>
-            <h1 className="text-4xl font-black uppercase tracking-tighter leading-none mb-4">Chemistry<br/>Department</h1>
+            <h1 className="text-4xl font-black uppercase tracking-tighter leading-none mb-4">Chemistry<br />Department</h1>
             <div className="absolute bottom-16">
-              <p className="text-[10px] uppercase opacity-50 font-bold mb-1">Designed & Developed By</p>
+              <p className="text-[10px] uppercase opacity-40 font-bold mb-1">Designed & Developed By</p>
               <p className="text-xl font-bold italic tracking-wide">Abinash Lenka</p>
             </div>
           </motion.div>
@@ -105,12 +111,12 @@ export default function AttendanceApp() {
               <Camera size={48} className="opacity-30 mb-4 text-white" />
             </div>
             <div className="flex flex-col gap-5 mb-10">
-              <label className="bg-white text-[#761E14] py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer">
+              <label className="bg-white text-[#761E14] py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase text-xs tracking-widest shadow-2xl active:scale-95 transition-all cursor-pointer">
                 <Camera size={20} /> Open Camera
                 <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleUpload} />
               </label>
-              <label className="bg-white/10 border border-white/20 py-5 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase text-xs tracking-widest cursor-pointer">
-                <Upload size={18} /> From Device
+              <label className="bg-white/10 border border-white/20 py-5 rounded-2xl flex items-center justify-center gap-3 font-bold uppercase text-xs tracking-widest active:scale-95 transition-all cursor-pointer">
+                <Upload size={18} /> From Gallery
                 <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} />
               </label>
             </div>
@@ -119,13 +125,15 @@ export default function AttendanceApp() {
 
         {/* 3. REVIEW SCREEN */}
         {step === 'review' && (
-          <motion.div key="review" className="relative z-10 p-6 flex flex-col h-screen">
+          <motion.div key="review" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 p-6 flex flex-col h-screen">
             <h2 className="text-2xl font-bold mt-14 text-center">Verify Pages</h2>
-            <div className="grid grid-cols-2 gap-4 flex-1 overflow-auto py-8">
+            <div className="grid grid-cols-2 gap-4 flex-1 overflow-auto py-8 no-scrollbar">
               {images.map((img, i) => (
                 <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl">
                   <img src={img} className="w-full h-full object-cover" />
-                  <button onClick={() => setImages(images.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 bg-red-600 p-2 rounded-xl"><Trash2 size={16}/></button>
+                  <button onClick={() => setImages(images.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 bg-red-600 p-2 rounded-xl">
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -151,7 +159,7 @@ export default function AttendanceApp() {
         {step === 'results' && (
           <motion.div key="results" initial={{ y: '100%' }} animate={{ y: 0 }} className="relative z-10 h-screen flex flex-col bg-[#3E1722]">
             <div className="p-6 flex items-center justify-between border-b border-white/5 bg-white/[0.03] backdrop-blur-xl">
-              <button onClick={() => setStep('review')} className="bg-white/10 p-3 rounded-2xl"><ChevronLeft size={20}/></button>
+              <button onClick={() => setStep('upload')} className="bg-white/10 p-3 rounded-2xl"><ChevronLeft size={20}/></button>
               <h3 className="font-black text-xs uppercase tracking-widest">Attendance Report</h3>
               <button onClick={() => {setImages([]); setStep('upload');}} className="p-2 opacity-30"><RotateCcw size={18}/></button>
             </div>
@@ -172,7 +180,7 @@ export default function AttendanceApp() {
                       <tr key={i} className={`border-b border-white/5 ${isDefaulter ? "bg-red-500/15" : ""}`}>
                         <td className="p-4 text-center opacity-60 font-mono font-bold text-white/80">{s.rollNo}</td>
                         <td className="p-4 font-bold tracking-tight text-white">{s.name}</td>
-                        <td className={`p-4 text-center font-black ${isDefaulter ? "text-red-400" : "text-green-400"}`}>{perc.toFixed(0)}%</td>
+                        <td className={`p-4 text-center font-black text-[13px] ${isDefaulter ? "text-red-400" : "text-green-400"}`}>{perc.toFixed(0)}%</td>
                       </tr>
                     );
                   })}
